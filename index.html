@@ -14,17 +14,16 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --gold:#d4a843;--gold-light:#f0d78c;--deep:#1a0a2e;--wine:#4a1942;
-  --cream:#faf3e0;--red:#c0392b;
+  --cream:#faf3e0;--red:#c0392b;--green:#27ae60;
 }
 html{min-height:100%;font-family:'Crimson Pro',serif;background:var(--deep);color:var(--cream);overflow-x:hidden}
-body{min-height:100%;overflow-x:hidden}
+body{min-height:100%;overflow-x:hidden;font-family:'Crimson Pro',serif;background:var(--deep);color:var(--cream)}
 
 .bg-photo{
   position:fixed;inset:0;z-index:0;
   background-size:cover;background-position:center top;
-  opacity:0;transition:opacity .6s;
+  opacity:.18;transition:opacity .6s;
 }
-.bg-photo.active{opacity:.18}
 .bg-overlay{position:fixed;inset:0;z-index:1;
   background:linear-gradient(180deg,rgba(26,10,46,.7) 0%,rgba(74,25,66,.85) 50%,rgba(26,10,46,.95) 100%);
 }
@@ -32,7 +31,6 @@ body{min-height:100%;overflow-x:hidden}
 .container{
   position:relative;z-index:2;
   max-width:440px;margin:0 auto;padding:24px 20px 60px;
-  min-height:100%;
 }
 
 h1{
@@ -69,7 +67,6 @@ input::placeholder{color:rgba(250,243,224,.3)}
 
 .row{display:flex;gap:12px}
 .row>div{flex:1}
-
 .field{margin-bottom:12px}
 
 .result-box{
@@ -98,19 +95,18 @@ input::placeholder{color:rgba(250,243,224,.3)}
 .babble-meter{margin-top:12px}
 .babble-bar-bg{
   height:18px;background:rgba(255,255,255,.08);border-radius:9px;
-  overflow:hidden;position:relative;
+  overflow:hidden;
 }
 .babble-bar{
   height:100%;border-radius:9px;
-  background:linear-gradient(90deg,var(--gold),var(--red));
   transition:width .5s cubic-bezier(.4,0,.2,1);
   min-width:0;
 }
+.babble-bar.gold{background:linear-gradient(90deg,var(--gold),var(--red))}
+.babble-bar.red{background:linear-gradient(90deg,#e67e22,var(--red))}
 .babble-label{font-size:.75em;color:var(--gold-light);margin-top:4px;text-align:right;opacity:.7}
 
-.photo-upload{
-  text-align:center;margin-bottom:20px;
-}
+.photo-upload{text-align:center;margin-bottom:20px}
 .photo-btn{
   display:inline-flex;align-items:center;gap:6px;
   padding:10px 20px;border-radius:10px;
@@ -126,7 +122,6 @@ input::placeholder{color:rgba(250,243,224,.3)}
   margin-top:20px;padding:28px;text-align:center;
   background:linear-gradient(135deg,var(--wine),var(--deep));
   border:2px solid var(--gold);border-radius:20px;
-  position:relative;
 }
 .grand-total .result-value{font-size:2.8em}
 .grand-total .crown{font-size:2.5em;margin-bottom:6px}
@@ -159,9 +154,7 @@ input::placeholder{color:rgba(250,243,224,.3)}
 .add-form{margin-top:10px;display:none}
 .add-form.show{display:block}
 
-.install-banner{
-  display:none;text-align:center;margin-bottom:16px;
-}
+.install-banner{display:none;text-align:center;margin-bottom:16px}
 .install-btn{
   padding:12px 28px;
   background:linear-gradient(135deg,var(--gold),#b8922e);
@@ -170,6 +163,32 @@ input::placeholder{color:rgba(250,243,224,.3)}
   font-weight:700;font-size:1em;cursor:pointer;
   box-shadow:0 4px 20px rgba(212,168,67,.3);
 }
+
+.slider-wrap{display:flex;align-items:center;gap:12px}
+.slider-wrap input[type="range"]{
+  flex:1;-webkit-appearance:none;appearance:none;height:6px;
+  background:rgba(255,255,255,.15);border-radius:3px;outline:none;
+  border:none;padding:0;
+}
+.slider-wrap input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--gold);cursor:pointer;border:2px solid var(--deep);
+}
+.slider-val{
+  font-family:'Playfair Display',serif;font-weight:700;
+  color:var(--gold);font-size:1.1em;min-width:42px;text-align:right;
+}
+
+.kpi-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:8px;
+  background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);
+  font-size:.8em;color:var(--green);margin-top:8px;
+}
+.kpi-badge.error{background:rgba(192,57,43,.1);border-color:rgba(192,57,43,.3);color:var(--red)}
+
+.call-section{margin-bottom:10px;padding:12px;background:rgba(255,255,255,.04);border-radius:10px}
+.call-section-title{font-size:.85em;color:var(--gold-light);font-weight:600;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -185,26 +204,27 @@ input::placeholder{color:rgba(250,243,224,.3)}
 
   <div class="photo-upload">
     <label class="photo-btn" id="photoLabel" for="photoInput">
-      📷 Legg til bilde av jubilanten
+      📷 Bytt bilde av Morten
     </label>
     <input type="file" id="photoInput" accept="image/*">
   </div>
 
-  <h1 id="mainTitle">Hva koster det å kjenne<br>Morten «Mentaliteten» Sv. Næss?</h1>
+  <h1>Hva koster det å kjenne<br>Morten «Mentaliteten» Sv. Næss?</h1>
   <p class="subtitle">En vitenskapelig kalkulator · 50 år</p>
 
-  <!-- Settings -->
+  <!-- Timelønn + KPI -->
   <div class="card">
     <div class="card-title"><span class="emoji">👑</span> Jubilantens timelønn</div>
     <div class="field">
       <label>Timelønn (kr) – hva Mortens tid er verdt</label>
       <input type="number" id="hourlyRate" placeholder="f.eks. 900" min="0">
     </div>
+    <div id="kpiBadge"></div>
   </div>
 
   <!-- Time entries -->
   <div class="card">
-    <div class="card-title"><span class="emoji">⏱️</span> Tid brukt på ham</div>
+    <div class="card-title"><span class="emoji">⏱️</span> Tid brukt på Morten</div>
     <p style="font-size:.82em;color:var(--gold-light);opacity:.6;margin-bottom:8px">
       Legg til alt du har ofret: gave-shopping, sangtekst-skriving, eksistensiell tvil…
     </p>
@@ -217,50 +237,81 @@ input::placeholder{color:rgba(250,243,224,.3)}
       </div>
       <button class="add-btn" style="margin-top:8px" id="saveTimeBtn">✓ Lagre</button>
     </div>
-    <div class="result-box time-sum" style="margin-top:14px">
+    <div class="result-box" style="margin-top:14px">
       <div class="result-label">Total tid investert i Morten</div>
       <div class="result-value" id="totalTimeHrs">0 t</div>
       <div class="result-value" style="font-size:1.6em;margin-top:4px" id="totalTimeValue"></div>
     </div>
   </div>
 
+  <!-- Friendship discount -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">🤝</span> Vennskapsrabatt</div>
+    <p style="font-size:.82em;color:var(--gold-light);opacity:.6;margin-bottom:12px">
+      Hvor mye av tidsbruken anser du som frivillig og gledesfylt?
+      Resten er ren Morten-skade.
+    </p>
+    <div class="slider-wrap">
+      <span style="font-size:.8em;color:var(--gold-light)">0%</span>
+      <input type="range" id="discountSlider" min="0" max="100" value="0">
+      <span class="slider-val" id="discountVal">0%</span>
+    </div>
+    <div class="result-sub" style="text-align:center;margin-top:8px" id="discountComment">Ingen rabatt – godt. Alt er hans skyld.</div>
+  </div>
+
   <!-- Phone calls -->
   <div class="card">
     <div class="card-title"><span class="emoji">📞</span> Telefonsamtaler</div>
-    <p style="font-size:.82em;color:var(--gold-light);opacity:.6;margin-bottom:8px">
-      Hvorav mesteparten er Mortens monolog.
+    <p style="font-size:.82em;color:var(--gold-light);opacity:.6;margin-bottom:12px">
+      Morten ringer. Morten snakker. Du lytter.
     </p>
-    <div class="row">
-      <div class="field">
-        <label>Total samtaletid (min)</label>
-        <input type="number" id="callTotal" placeholder="45" min="0">
+
+    <div class="call-section">
+      <div class="call-section-title">📥 Innkommende (Morten ringer deg)</div>
+      <div class="row">
+        <div class="field">
+          <label>Total tid (min)</label>
+          <input type="number" id="callInTotal" placeholder="30" min="0">
+        </div>
+        <div class="field">
+          <label>Mortens taletid (min)</label>
+          <input type="number" id="callInHis" placeholder="28" min="0">
+        </div>
       </div>
-      <div class="field">
-        <label>Mortens taletid (min)</label>
-        <input type="number" id="callHis" placeholder="42" min="0">
+      <div class="babble-meter">
+        <div class="babble-bar-bg"><div class="babble-bar gold" id="babbleBarIn" style="width:0%"></div></div>
+        <div class="babble-label" id="babbleLabelIn"></div>
       </div>
     </div>
-    <div class="babble-meter">
-      <div class="babble-bar-bg"><div class="babble-bar" id="babbleBar" style="width:0%"></div></div>
-      <div class="babble-label" id="babbleLabel"></div>
+
+    <div class="call-section">
+      <div class="call-section-title">📤 Utgående (du ringer Morten)</div>
+      <div class="row">
+        <div class="field">
+          <label>Total tid (min)</label>
+          <input type="number" id="callOutTotal" placeholder="15" min="0">
+        </div>
+        <div class="field">
+          <label>Mortens taletid (min)</label>
+          <input type="number" id="callOutHis" placeholder="13" min="0">
+        </div>
+      </div>
+      <div class="babble-meter">
+        <div class="babble-bar-bg"><div class="babble-bar red" id="babbleBarOut" style="width:0%"></div></div>
+        <div class="babble-label" id="babbleLabelOut"></div>
+      </div>
     </div>
+
     <div class="result-box" style="margin-top:14px">
       <div class="result-label">Samfunnskostnad av Mortens babbel</div>
       <div class="result-value" id="babbleCost">0 kr</div>
       <div class="result-sub" id="babbleSub"></div>
     </div>
-  </div>
-
-  <!-- Grand total -->
-  <div class="grand-total">
-    <div class="crown">👑</div>
-    <div class="result-label">Din kostnad ved å kjenne Morten</div>
-    <div class="result-value" id="grandTotal">0 kr</div>
-    <div class="result-sub" id="grandSub"></div>
+    <div class="result-sub" style="text-align:center;margin-top:6px;font-weight:600" id="hijackComment"></div>
   </div>
 
   <!-- Admin cost -->
-  <div class="card" style="margin-top:16px">
+  <div class="card">
     <div class="card-title"><span class="emoji">🧾</span> Egenadministrasjon</div>
     <p style="font-size:.82em;color:var(--gold-light);opacity:.6;margin-bottom:8px">
       Tid brukt på å administrere denne appen, lese resultater, diskutere Morten, osv.
@@ -281,6 +332,15 @@ input::placeholder{color:rgba(250,243,224,.3)}
     </div>
   </div>
 
+  <!-- Grand total -->
+  <div class="grand-total">
+    <div class="crown">👑</div>
+    <div class="result-label">Din kostnad ved å kjenne Morten</div>
+    <div class="result-value" id="grandTotal">0 kr</div>
+    <div class="result-sub" id="grandSub"></div>
+    <div class="result-sub" id="discountLine" style="color:var(--green)"></div>
+  </div>
+
   <!-- Society cost -->
   <div class="card" style="margin-top:16px">
     <div class="card-title"><span class="emoji">🌍</span> Totale samfunnskostnader</div>
@@ -299,7 +359,10 @@ input::placeholder{color:rgba(250,243,224,.3)}
     <div class="result-sub" id="societySub"></div>
   </div>
 
-  <p class="footer">Gratulerer med 50 år · Du er verdt hvert øre*<br><span style="font-size:.85em">*kanskje</span></p>
+  <p class="footer">
+    Gratulerer med 50 år · Du er verdt hvert øre*<br>
+    <span style="font-size:.85em">*kanskje · KPI-justert av SSB</span>
+  </p>
 </div>
 
 <script>
@@ -307,13 +370,30 @@ const $ = id => document.getElementById(id);
 let entries = [];
 let adminEntries = [];
 let deferredPrompt;
+let kpiFactor = 1;
+
+// Default background SVG
+const defaultBgSvg = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600"><rect fill="#2d1150" width="400" height="600"/><circle cx="200" cy="190" r="65" fill="#3d1a60" stroke="#d4a843" stroke-width="2" opacity=".5"/><path d="M140 265 Q200 240 260 265 L270 440 Q200 460 130 440Z" fill="#3d1a60" stroke="#d4a843" stroke-width="2" opacity=".4"/><text x="200" y="130" text-anchor="middle" font-size="55">👑</text><text x="200" y="530" text-anchor="middle" font-family="serif" font-size="20" fill="#d4a843" opacity=".3">MORTEN · 50</text></svg>')}`;
+
+function initBg() {
+  let saved = null;
+  try { saved = localStorage.getItem('mortenPhoto'); } catch(e) {}
+  if (saved) {
+    $('bgPhoto').style.backgroundImage = 'url(' + saved + ')';
+    $('photoLabel').textContent = '✅ Eget bilde lagt til';
+    $('photoLabel').classList.add('has-photo');
+  } else {
+    $('bgPhoto').style.backgroundImage = 'url("' + defaultBgSvg + '")';
+  }
+}
+initBg();
 
 // PWA install
-window.addEventListener('beforeinstallprompt', e => {
+window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault(); deferredPrompt = e;
   $('installBanner').style.display = 'block';
 });
-$('installBtn').addEventListener('click', async () => {
+$('installBtn').addEventListener('click', async function() {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
   await deferredPrompt.userChoice;
@@ -321,52 +401,67 @@ $('installBtn').addEventListener('click', async () => {
   $('installBanner').style.display = 'none';
 });
 
-// Photo
-$('photoInput').addEventListener('change', e => {
-  const file = e.target.files[0];
+// Photo upload
+$('photoInput').addEventListener('change', function(e) {
+  var file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    $('bgPhoto').style.backgroundImage = `url(${ev.target.result})`;
-    $('bgPhoto').classList.add('active');
-    $('photoLabel').textContent = '✅ Bilde lagt til';
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    $('bgPhoto').style.backgroundImage = 'url(' + ev.target.result + ')';
+    $('photoLabel').textContent = '✅ Eget bilde lagt til';
     $('photoLabel').classList.add('has-photo');
-    localStorage.setItem('jubilantPhoto', ev.target.result);
+    try { localStorage.setItem('mortenPhoto', ev.target.result); } catch(e) {}
   };
   reader.readAsDataURL(file);
 });
 
-// Restore photo
-const savedPhoto = localStorage.getItem('jubilantPhoto');
-if (savedPhoto) {
-  $('bgPhoto').style.backgroundImage = `url(${savedPhoto})`;
-  $('bgPhoto').classList.add('active');
-  $('photoLabel').textContent = '✅ Bilde lagt til';
-  $('photoLabel').classList.add('has-photo');
+// KPI from SSB (table 03013)
+async function fetchKPI() {
+  try {
+    var query = {
+      query: [
+        { code: "ContentsCode", selection: { filter: "item", values: ["KpiIndMnd"] } },
+        { code: "Tid", selection: { filter: "top", values: ["1"] } }
+      ],
+      response: { format: "json-stat2" }
+    };
+    var res = await fetch('https://data.ssb.no/api/v0/no/table/03013', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(query)
+    });
+    var data = await res.json();
+    var latestKPI = data.value[0];
+    var periods = Object.keys(data.dimension.Tid.category.label);
+    var latestPeriod = data.dimension.Tid.category.label[periods[periods.length - 1]];
+    kpiFactor = latestKPI / 100;
+    $('kpiBadge').innerHTML = '<div class="kpi-badge">📊 KPI: ' + latestKPI.toFixed(1) + ' (' + latestPeriod + ') — alle beløp justert ×' + kpiFactor.toFixed(3) + '</div>';
+    calc();
+  } catch (e) {
+    $('kpiBadge').innerHTML = '<div class="kpi-badge error">⚠ KPI-data utilgjengelig – bruker nominell verdi</div>';
+    kpiFactor = 1;
+  }
 }
+fetchKPI();
 
 // Time entries
 function renderEntries() {
-  $('timeEntries').innerHTML = entries.map((e, i) =>
-    `<div class="entry-item">
-      <span class="desc">${e.desc}</span>
-      <span class="hrs">${e.hrs} t</span>
-      <button class="entry-remove" onclick="removeEntry(${i})">✕</button>
-    </div>`
-  ).join('');
+  $('timeEntries').innerHTML = entries.map(function(e, i) {
+    return '<div class="entry-item"><span class="desc">' + esc(e.desc) + '</span><span class="hrs">' + e.hrs + ' t</span><button class="entry-remove" onclick="removeEntry(' + i + ')">✕</button></div>';
+  }).join('');
   calc();
 }
-window.removeEntry = i => { entries.splice(i, 1); renderEntries(); };
+window.removeEntry = function(i) { entries.splice(i, 1); renderEntries(); };
 
-$('addTimeBtn').addEventListener('click', () => {
+$('addTimeBtn').addEventListener('click', function() {
   $('addTimeForm').classList.toggle('show');
   $('newTimeDesc').focus();
 });
-$('saveTimeBtn').addEventListener('click', () => {
-  const desc = $('newTimeDesc').value.trim();
-  const hrs = parseFloat($('newTimeHrs').value);
+$('saveTimeBtn').addEventListener('click', function() {
+  var desc = $('newTimeDesc').value.trim();
+  var hrs = parseFloat($('newTimeHrs').value);
   if (!desc || !hrs) return;
-  entries.push({ desc, hrs });
+  entries.push({ desc: desc, hrs: hrs });
   $('newTimeDesc').value = ''; $('newTimeHrs').value = '';
   $('newTimeDesc').focus();
   renderEntries();
@@ -374,69 +469,108 @@ $('saveTimeBtn').addEventListener('click', () => {
 
 // Admin entries
 function renderAdminEntries() {
-  $('adminEntries').innerHTML = adminEntries.map((e, i) =>
-    `<div class="entry-item">
-      <span class="desc">${e.desc}</span>
-      <span class="hrs">${e.hrs} t</span>
-      <button class="entry-remove" onclick="removeAdmin(${i})">✕</button>
-    </div>`
-  ).join('');
+  $('adminEntries').innerHTML = adminEntries.map(function(e, i) {
+    return '<div class="entry-item"><span class="desc">' + esc(e.desc) + '</span><span class="hrs">' + e.hrs + ' t</span><button class="entry-remove" onclick="removeAdmin(' + i + ')">✕</button></div>';
+  }).join('');
   calc();
 }
-window.removeAdmin = i => { adminEntries.splice(i, 1); renderAdminEntries(); };
+window.removeAdmin = function(i) { adminEntries.splice(i, 1); renderAdminEntries(); };
 
-$('addAdminBtn').addEventListener('click', () => {
+$('addAdminBtn').addEventListener('click', function() {
   $('addAdminForm').classList.toggle('show');
   $('newAdminDesc').focus();
 });
-$('saveAdminBtn').addEventListener('click', () => {
-  const desc = $('newAdminDesc').value.trim();
-  const hrs = parseFloat($('newAdminHrs').value);
+$('saveAdminBtn').addEventListener('click', function() {
+  var desc = $('newAdminDesc').value.trim();
+  var hrs = parseFloat($('newAdminHrs').value);
   if (!desc || !hrs) return;
-  adminEntries.push({ desc, hrs });
+  adminEntries.push({ desc: desc, hrs: hrs });
   $('newAdminDesc').value = ''; $('newAdminHrs').value = '';
   $('newAdminDesc').focus();
   renderAdminEntries();
 });
 
+// Discount slider
+$('discountSlider').addEventListener('input', function() {
+  var v = parseInt($('discountSlider').value);
+  $('discountVal').textContent = v + '%';
+  if (v === 0) $('discountComment').textContent = 'Ingen rabatt – godt. Alt er hans skyld.';
+  else if (v <= 25) $('discountComment').textContent = 'Litt frivillig. Du er snill.';
+  else if (v <= 50) $('discountComment').textContent = 'Halvparten frivillig? Du er naiv.';
+  else if (v <= 75) $('discountComment').textContent = 'Stockholm-syndrom er en reell diagnose.';
+  else $('discountComment').textContent = 'Du nyter tydeligvis lidelsen. Fascinerende.';
+  calc();
+});
+
 // Calc
 function calc() {
-  const rate = parseFloat($('hourlyRate').value) || 0;
-  const totalHrs = entries.reduce((s, e) => s + e.hrs, 0);
-  const timeVal = totalHrs * rate;
+  var rate = (parseFloat($('hourlyRate').value) || 0) * kpiFactor;
+  var totalHrs = entries.reduce(function(s, e) { return s + e.hrs; }, 0);
+  var timeVal = totalHrs * rate;
 
-  $('totalTimeHrs').textContent = totalHrs.toFixed(1).replace('.0','') + ' t';
+  $('totalTimeHrs').textContent = totalHrs.toFixed(1).replace(/\.0$/, '') + ' t';
   $('totalTimeValue').textContent = rate ? fmt(timeVal) : '';
 
-  const callTotal = parseFloat($('callTotal').value) || 0;
-  const callHis = parseFloat($('callHis').value) || 0;
-  const pct = callTotal > 0 ? Math.min((callHis / callTotal) * 100, 100) : 0;
-  $('babbleBar').style.width = pct + '%';
-  $('babbleLabel').textContent = pct > 0 ? `${pct.toFixed(0)}% av samtalen var Mortens` : '';
+  // Calls
+  var inTotal = parseFloat($('callInTotal').value) || 0;
+  var inHis = parseFloat($('callInHis').value) || 0;
+  var outTotal = parseFloat($('callOutTotal').value) || 0;
+  var outHis = parseFloat($('callOutHis').value) || 0;
 
-  const babbleHrs = callHis / 60;
-  const babbleVal = babbleHrs * rate;
+  var inPct = inTotal > 0 ? Math.min(inHis / inTotal * 100, 100) : 0;
+  var outPct = outTotal > 0 ? Math.min(outHis / outTotal * 100, 100) : 0;
+
+  $('babbleBarIn').style.width = inPct + '%';
+  $('babbleLabelIn').textContent = inPct > 0 ? inPct.toFixed(0) + '% av samtalen var Mortens' : '';
+
+  $('babbleBarOut').style.width = outPct + '%';
+  if (outPct > 50 && outTotal > 0) {
+    $('babbleLabelOut').textContent = outPct.toFixed(0) + '% — DU ringte HAN, og han kuppet samtalen';
+  } else {
+    $('babbleLabelOut').textContent = outPct > 0 ? outPct.toFixed(0) + '% av samtalen var Mortens' : '';
+  }
+
+  var totalHisMin = inHis + outHis;
+  var babbleHrs = totalHisMin / 60;
+  var babbleVal = babbleHrs * rate;
   $('babbleCost').textContent = fmt(babbleVal);
-  $('babbleSub').textContent = rate && callHis ? `${callHis} min monolog × ${fmt(rate)}/t` : '';
+  $('babbleSub').textContent = rate && totalHisMin ? totalHisMin + ' min monolog × ' + fmt(rate) + '/t' : '';
 
-  const adminHrs = adminEntries.reduce((s, e) => s + e.hrs, 0);
-  const adminVal = adminHrs * rate;
+  // Hijack
+  if (outTotal > 0 && outHis > outTotal * 0.5) {
+    var hijackMin = outHis - (outTotal * 0.5);
+    $('hijackComment').textContent = '⚠ Morten kuppet ' + hijackMin.toFixed(0) + ' min av DINE utgående samtaler';
+    $('hijackComment').style.color = 'var(--red)';
+  } else {
+    $('hijackComment').textContent = '';
+  }
+
+  // Admin
+  var adminHrs = adminEntries.reduce(function(s, e) { return s + e.hrs; }, 0);
+  var adminVal = adminHrs * rate;
   $('adminCost').textContent = fmt(adminVal);
-  $('adminSub').textContent = adminHrs > 0 ? `${adminHrs} t egenadministrasjon` : '';
+  $('adminSub').textContent = adminHrs > 0 ? adminHrs + ' t egenadministrasjon' : '';
 
-  const grand = timeVal + babbleVal + adminVal;
+  // Discount
+  var discount = parseInt($('discountSlider').value) / 100;
+  var grossTotal = timeVal + babbleVal + adminVal;
+  var discountAmount = grossTotal * discount;
+  var grand = grossTotal - discountAmount;
+
   $('grandTotal').textContent = fmt(grand);
   $('grandSub').textContent = grand > 0 ? gratisKommentar(grand) : '';
+  $('discountLine').textContent = discount > 0 ? 'Vennskapsrabatt: −' + fmt(discountAmount) + ' (' + (discount * 100).toFixed(0) + '%)' : '';
 
-  const network = parseFloat($('networkSize').value) || 0;
-  const society = grand * network;
+  // Society
+  var network = parseFloat($('networkSize').value) || 0;
+  var society = grand * network;
   $('societyTotal').textContent = fmt(society);
-  $('societySub').textContent = society > 0 ? `${fmt(grand)} × ${network} personer – ${samfunnsKommentar(society)}` : '';
+  $('societySub').textContent = society > 0 ? fmt(grand) + ' × ' + network + ' personer — ' + samfunnsKommentar(society) : '';
 }
 
-function fmt(n) {
-  return Math.round(n).toLocaleString('nb-NO') + ' kr';
-}
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function fmt(n) { return Math.round(n).toLocaleString('nb-NO') + ' kr'; }
 
 function gratisKommentar(v) {
   if (v > 100000) return 'Billigere å kjøpe en Rolex.';
@@ -454,9 +588,9 @@ function samfunnsKommentar(v) {
   return 'Foreløpig innenfor akseptable tap.';
 }
 
-[$('hourlyRate'), $('callTotal'), $('callHis'), $('networkSize')].forEach(el =>
-  el.addEventListener('input', calc)
-);
+['hourlyRate','callInTotal','callInHis','callOutTotal','callOutHis','networkSize'].forEach(function(id) {
+  $(id).addEventListener('input', calc);
+});
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
