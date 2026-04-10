@@ -362,11 +362,12 @@ input::placeholder{color:rgba(250,243,224,.3)}
     <div class="result-label">Total samfunnskostnad av Morten</div>
     <div class="result-value" style="color:var(--red)" id="societyTotal">0 kr</div>
     <div class="result-sub" id="societySub"></div>
+    <div class="result-sub" id="hlrWarning" style="color:var(--red);font-weight:600;margin-top:8px"></div>
   </div>
 
   <p class="footer">
     Gratulerer med 50 år · Du er verdt hvert øre*<br>
-    <span style="font-size:.85em">*kanskje · KPI-justert av SSB</span>
+    <span style="font-size:.85em">*vurderes fortløpende · KPI-justert av SSB</span>
   </p>
 </div>
 
@@ -377,7 +378,9 @@ let adminEntries = [];
 let deferredPrompt;
 let kpiFactor = 1;
 
-// Default background
+// Default background (embedded)
+var DEFAULT_BG = 'data:image/jpeg;base64,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';
+
 function initBg() {
   var saved = null;
   try { saved = localStorage.getItem('mortenPhoto'); } catch(e) {}
@@ -386,7 +389,7 @@ function initBg() {
     $('photoLabel').textContent = '✅ Eget bilde lagt til';
     $('photoLabel').classList.add('has-photo');
   } else {
-    $('bgPhoto').style.backgroundImage = 'url(default-bg.png)';
+    $('bgPhoto').style.backgroundImage = 'url(' + DEFAULT_BG + ')';
   }
 }
 initBg();
@@ -579,6 +582,7 @@ function calc() {
   var society = grand * network;
   $('societyTotal').textContent = fmt(society);
   $('societySub').textContent = society > 0 ? fmt(grand) + ' × ' + network + ' personer — ' + samfunnsKommentar(society) : '';
+  $('hlrWarning').textContent = society > 50000000 ? '⛑️ KLINISK ANBEFALING: HLR-negativ. Legen bør vurdere seg selv.' : '';
 }
 
 function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
@@ -594,7 +598,9 @@ function gratisKommentar(v) {
 }
 
 function samfunnsKommentar(v) {
+  if (v > 50000000) return 'HLR-negativ anbefales. Legen bør vurdere seg selv.';
   if (v > 10000000) return 'Bør vurderes som nasjonal sikkerhetsrisiko.';
+  if (v > 5000000) return 'Etisk komité bør innkalles.';
   if (v > 1000000) return 'Tilsvarende et mindre oljefelt.';
   if (v > 500000) return 'NRK bør lage dokumentar.';
   if (v > 100000) return 'Riksrevisjonen bør varsles.';
