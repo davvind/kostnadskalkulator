@@ -1,6 +1,6 @@
 {
-  "name": "Hva koster det å kjenne deg?",
-  "short_name": "Kostnadskalkulator",
+  "name": "Hva koster Morten?",
+  "short_name": "Koster Morten",
   "description": "En vitenskapelig kalkulator for hva det koster å kjenne jubilanten",
   "start_url": "./index.html",
   "display": "standalone",

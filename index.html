@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Hva er din tid verdt?</title>
+<title>Hva koster Morten?</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1a0a2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -190,18 +190,14 @@ input::placeholder{color:rgba(250,243,224,.3)}
     <input type="file" id="photoInput" accept="image/*">
   </div>
 
-  <h1 id="mainTitle">Hva koster det å kjenne<br><span id="nameDisplay">_______</span>?</h1>
-  <p class="subtitle">En vitenskapelig kalkulator</p>
+  <h1 id="mainTitle">Hva koster det å kjenne<br>Morten «Mentaliteten» Sv. Næss?</h1>
+  <p class="subtitle">En vitenskapelig kalkulator · 50 år</p>
 
   <!-- Settings -->
   <div class="card">
-    <div class="card-title"><span class="emoji">👑</span> Jubilanten</div>
+    <div class="card-title"><span class="emoji">👑</span> Jubilantens timelønn</div>
     <div class="field">
-      <label>Navn</label>
-      <input type="text" id="friendName" placeholder="Skriv inn navn" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>Timelønn (kr) – hva hans tid er verdt</label>
+      <label>Timelønn (kr) – hva Mortens tid er verdt</label>
       <input type="number" id="hourlyRate" placeholder="f.eks. 900" min="0">
     </div>
   </div>
@@ -221,10 +217,10 @@ input::placeholder{color:rgba(250,243,224,.3)}
       </div>
       <button class="add-btn" style="margin-top:8px" id="saveTimeBtn">✓ Lagre</button>
     </div>
-    <div class="result-box" style="margin-top:14px">
-      <div class="result-label">Total tid investert</div>
+    <div class="result-box time-sum" style="margin-top:14px">
+      <div class="result-label">Total tid investert i Morten</div>
       <div class="result-value" id="totalTimeHrs">0 t</div>
-      <div class="result-sub" id="totalTimeValue"></div>
+      <div class="result-value" style="font-size:1.6em;margin-top:4px" id="totalTimeValue"></div>
     </div>
   </div>
 
@@ -232,7 +228,7 @@ input::placeholder{color:rgba(250,243,224,.3)}
   <div class="card">
     <div class="card-title"><span class="emoji">📞</span> Telefonsamtaler</div>
     <p style="font-size:.82em;color:var(--gold-light);opacity:.6;margin-bottom:8px">
-      Hvorav mesteparten er hans monolog.
+      Hvorav mesteparten er Mortens monolog.
     </p>
     <div class="row">
       <div class="field">
@@ -240,7 +236,7 @@ input::placeholder{color:rgba(250,243,224,.3)}
         <input type="number" id="callTotal" placeholder="45" min="0">
       </div>
       <div class="field">
-        <label>Hans taletid (min)</label>
+        <label>Mortens taletid (min)</label>
         <input type="number" id="callHis" placeholder="42" min="0">
       </div>
     </div>
@@ -249,7 +245,7 @@ input::placeholder{color:rgba(250,243,224,.3)}
       <div class="babble-label" id="babbleLabel"></div>
     </div>
     <div class="result-box" style="margin-top:14px">
-      <div class="result-label">Samfunnskostnad av babbel</div>
+      <div class="result-label">Samfunnskostnad av Mortens babbel</div>
       <div class="result-value" id="babbleCost">0 kr</div>
       <div class="result-sub" id="babbleSub"></div>
     </div>
@@ -258,25 +254,47 @@ input::placeholder{color:rgba(250,243,224,.3)}
   <!-- Grand total -->
   <div class="grand-total">
     <div class="crown">👑</div>
-    <div class="result-label">Din kostnad ved å kjenne <span id="nameTotal">_______</span></div>
+    <div class="result-label">Din kostnad ved å kjenne Morten</div>
     <div class="result-value" id="grandTotal">0 kr</div>
     <div class="result-sub" id="grandSub"></div>
+  </div>
+
+  <!-- Admin cost -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-title"><span class="emoji">🧾</span> Egenadministrasjon</div>
+    <p style="font-size:.82em;color:var(--gold-light);opacity:.6;margin-bottom:8px">
+      Tid brukt på å administrere denne appen, lese resultater, diskutere Morten, osv.
+    </p>
+    <div class="entry-list" id="adminEntries"></div>
+    <button class="add-btn" id="addAdminBtn">+ Legg til</button>
+    <div class="add-form" id="addAdminForm">
+      <div class="row">
+        <div><label>Hva</label><input type="text" id="newAdminDesc" placeholder="Installere appen"></div>
+        <div style="max-width:90px"><label>Timer</label><input type="number" id="newAdminHrs" placeholder="0.5" min="0" step="0.25"></div>
+      </div>
+      <button class="add-btn" style="margin-top:8px" id="saveAdminBtn">✓ Lagre</button>
+    </div>
+    <div class="result-box" style="margin-top:14px">
+      <div class="result-label">Administrasjonskostnad</div>
+      <div class="result-value" style="font-size:1.8em" id="adminCost">0 kr</div>
+      <div class="result-sub" id="adminSub"></div>
+    </div>
   </div>
 
   <!-- Society cost -->
   <div class="card" style="margin-top:16px">
     <div class="card-title"><span class="emoji">🌍</span> Totale samfunnskostnader</div>
     <p style="font-size:.82em;color:var(--gold-light);opacity:.6;margin-bottom:8px">
-      Han kjenner jo flere enn bare deg. Ekstrapoler skaden.
+      Morten kjenner jo flere enn bare deg. Ekstrapoler skaden.
     </p>
     <div class="field">
-      <label>Antatt antall personer i hans nettverk</label>
+      <label>Antatt antall personer i Mortens nettverk</label>
       <input type="number" id="networkSize" placeholder="f.eks. 150" min="0">
     </div>
   </div>
   <div class="grand-total" style="margin-top:8px;border-color:var(--red);background:linear-gradient(135deg,#3a0a0a,var(--deep))">
     <div class="crown">🚨</div>
-    <div class="result-label">Total samfunnskostnad av <span id="nameSociety">_______</span></div>
+    <div class="result-label">Total samfunnskostnad av Morten</div>
     <div class="result-value" style="color:var(--red)" id="societyTotal">0 kr</div>
     <div class="result-sub" id="societySub"></div>
   </div>
@@ -287,6 +305,7 @@ input::placeholder{color:rgba(250,243,224,.3)}
 <script>
 const $ = id => document.getElementById(id);
 let entries = [];
+let adminEntries = [];
 let deferredPrompt;
 
 // PWA install
@@ -326,15 +345,6 @@ if (savedPhoto) {
   $('photoLabel').classList.add('has-photo');
 }
 
-// Name
-$('friendName').addEventListener('input', () => {
-  const n = $('friendName').value.trim() || '_______';
-  $('nameDisplay').textContent = n;
-  $('nameTotal').textContent = n;
-  $('nameSociety').textContent = n;
-  document.title = `Hva koster ${n}?`;
-});
-
 // Time entries
 function renderEntries() {
   $('timeEntries').innerHTML = entries.map((e, i) =>
@@ -362,6 +372,33 @@ $('saveTimeBtn').addEventListener('click', () => {
   renderEntries();
 });
 
+// Admin entries
+function renderAdminEntries() {
+  $('adminEntries').innerHTML = adminEntries.map((e, i) =>
+    `<div class="entry-item">
+      <span class="desc">${e.desc}</span>
+      <span class="hrs">${e.hrs} t</span>
+      <button class="entry-remove" onclick="removeAdmin(${i})">✕</button>
+    </div>`
+  ).join('');
+  calc();
+}
+window.removeAdmin = i => { adminEntries.splice(i, 1); renderAdminEntries(); };
+
+$('addAdminBtn').addEventListener('click', () => {
+  $('addAdminForm').classList.toggle('show');
+  $('newAdminDesc').focus();
+});
+$('saveAdminBtn').addEventListener('click', () => {
+  const desc = $('newAdminDesc').value.trim();
+  const hrs = parseFloat($('newAdminHrs').value);
+  if (!desc || !hrs) return;
+  adminEntries.push({ desc, hrs });
+  $('newAdminDesc').value = ''; $('newAdminHrs').value = '';
+  $('newAdminDesc').focus();
+  renderAdminEntries();
+});
+
 // Calc
 function calc() {
   const rate = parseFloat($('hourlyRate').value) || 0;
@@ -369,20 +406,25 @@ function calc() {
   const timeVal = totalHrs * rate;
 
   $('totalTimeHrs').textContent = totalHrs.toFixed(1).replace('.0','') + ' t';
-  $('totalTimeValue').textContent = rate ? `= ${fmt(timeVal)} i hans timelønn` : '';
+  $('totalTimeValue').textContent = rate ? fmt(timeVal) : '';
 
   const callTotal = parseFloat($('callTotal').value) || 0;
   const callHis = parseFloat($('callHis').value) || 0;
   const pct = callTotal > 0 ? Math.min((callHis / callTotal) * 100, 100) : 0;
   $('babbleBar').style.width = pct + '%';
-  $('babbleLabel').textContent = pct > 0 ? `${pct.toFixed(0)}% av samtalen var hans` : '';
+  $('babbleLabel').textContent = pct > 0 ? `${pct.toFixed(0)}% av samtalen var Mortens` : '';
 
   const babbleHrs = callHis / 60;
   const babbleVal = babbleHrs * rate;
   $('babbleCost').textContent = fmt(babbleVal);
   $('babbleSub').textContent = rate && callHis ? `${callHis} min monolog × ${fmt(rate)}/t` : '';
 
-  const grand = timeVal + babbleVal;
+  const adminHrs = adminEntries.reduce((s, e) => s + e.hrs, 0);
+  const adminVal = adminHrs * rate;
+  $('adminCost').textContent = fmt(adminVal);
+  $('adminSub').textContent = adminHrs > 0 ? `${adminHrs} t egenadministrasjon` : '';
+
+  const grand = timeVal + babbleVal + adminVal;
   $('grandTotal').textContent = fmt(grand);
   $('grandSub').textContent = grand > 0 ? gratisKommentar(grand) : '';
 
