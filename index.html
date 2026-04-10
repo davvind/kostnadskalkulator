@@ -253,9 +253,10 @@ input::placeholder{color:rgba(250,243,224,.3)}
     </p>
     <div class="slider-wrap">
       <span style="font-size:.8em;color:var(--gold-light)">0%</span>
-      <input type="range" id="discountSlider" min="0" max="100" value="0">
+      <input type="range" id="discountSlider" min="0" max="20" value="0">
       <span class="slider-val" id="discountVal">0%</span>
     </div>
+    <div class="result-sub" style="text-align:center;margin-top:4px;font-size:.7em;color:var(--red);opacity:.8">Maks 20%. Mer vennskap finnes ikke.</div>
     <div class="result-sub" style="text-align:center;margin-top:8px" id="discountComment">Ingen rabatt – godt. Alt er hans skyld.</div>
   </div>
 
@@ -270,12 +271,12 @@ input::placeholder{color:rgba(250,243,224,.3)}
       <div class="call-section-title">📥 Innkommende (Morten ringer deg)</div>
       <div class="row">
         <div class="field">
-          <label>Total tid (min)</label>
-          <input type="number" id="callInTotal" placeholder="30" min="0">
+          <label>Total tid (timer)</label>
+          <input type="number" id="callInTotal" placeholder="2.5" min="0" step="0.25">
         </div>
         <div class="field">
-          <label>Mortens taletid (min)</label>
-          <input type="number" id="callInHis" placeholder="28" min="0">
+          <label>Mortens taletid (timer)</label>
+          <input type="number" id="callInHis" placeholder="2.3" min="0" step="0.25">
         </div>
       </div>
       <div class="babble-meter">
@@ -286,14 +287,18 @@ input::placeholder{color:rgba(250,243,224,.3)}
 
     <div class="call-section">
       <div class="call-section-title">📤 Utgående (du ringer Morten)</div>
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer;font-size:.85em">
+        <input type="checkbox" id="outgoingVoluntary" style="width:auto;accent-color:var(--gold)">
+        <span>Jeg ringte frivillig</span>
+      </label>
       <div class="row">
         <div class="field">
-          <label>Total tid (min)</label>
-          <input type="number" id="callOutTotal" placeholder="15" min="0">
+          <label>Total tid (timer)</label>
+          <input type="number" id="callOutTotal" placeholder="1" min="0" step="0.25">
         </div>
         <div class="field">
-          <label>Mortens taletid (min)</label>
-          <input type="number" id="callOutHis" placeholder="13" min="0">
+          <label>Kuppet av Mortens monolog (timer)</label>
+          <input type="number" id="callOutHis" placeholder="0.75" min="0" step="0.25">
         </div>
       </div>
       <div class="babble-meter">
@@ -372,18 +377,16 @@ let adminEntries = [];
 let deferredPrompt;
 let kpiFactor = 1;
 
-// Default background SVG
-const defaultBgSvg = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600"><rect fill="#2d1150" width="400" height="600"/><circle cx="200" cy="190" r="65" fill="#3d1a60" stroke="#d4a843" stroke-width="2" opacity=".5"/><path d="M140 265 Q200 240 260 265 L270 440 Q200 460 130 440Z" fill="#3d1a60" stroke="#d4a843" stroke-width="2" opacity=".4"/><text x="200" y="130" text-anchor="middle" font-size="55">👑</text><text x="200" y="530" text-anchor="middle" font-family="serif" font-size="20" fill="#d4a843" opacity=".3">MORTEN · 50</text></svg>')}`;
-
+// Default background
 function initBg() {
-  let saved = null;
+  var saved = null;
   try { saved = localStorage.getItem('mortenPhoto'); } catch(e) {}
   if (saved) {
     $('bgPhoto').style.backgroundImage = 'url(' + saved + ')';
     $('photoLabel').textContent = '✅ Eget bilde lagt til';
     $('photoLabel').classList.add('has-photo');
   } else {
-    $('bgPhoto').style.backgroundImage = 'url("' + defaultBgSvg + '")';
+    $('bgPhoto').style.backgroundImage = 'url(default-bg.png)';
   }
 }
 initBg();
@@ -495,10 +498,10 @@ $('discountSlider').addEventListener('input', function() {
   var v = parseInt($('discountSlider').value);
   $('discountVal').textContent = v + '%';
   if (v === 0) $('discountComment').textContent = 'Ingen rabatt – godt. Alt er hans skyld.';
-  else if (v <= 25) $('discountComment').textContent = 'Litt frivillig. Du er snill.';
-  else if (v <= 50) $('discountComment').textContent = 'Halvparten frivillig? Du er naiv.';
-  else if (v <= 75) $('discountComment').textContent = 'Stockholm-syndrom er en reell diagnose.';
-  else $('discountComment').textContent = 'Du nyter tydeligvis lidelsen. Fascinerende.';
+  else if (v <= 5) $('discountComment').textContent = 'Raust av deg å innrømme 5%.';
+  else if (v <= 10) $('discountComment').textContent = 'Du begynner å bli sjenerøs nå.';
+  else if (v <= 15) $('discountComment').textContent = 'Kjærligheten gjør deg blind.';
+  else $('discountComment').textContent = '20% er maks. Mer rabatt finnes ikke i dette vennskapet.';
   calc();
 });
 
@@ -511,11 +514,12 @@ function calc() {
   $('totalTimeHrs').textContent = totalHrs.toFixed(1).replace(/\.0$/, '') + ' t';
   $('totalTimeValue').textContent = rate ? fmt(timeVal) : '';
 
-  // Calls
+  // Calls (in hours now)
   var inTotal = parseFloat($('callInTotal').value) || 0;
   var inHis = parseFloat($('callInHis').value) || 0;
   var outTotal = parseFloat($('callOutTotal').value) || 0;
   var outHis = parseFloat($('callOutHis').value) || 0;
+  var outVoluntary = $('outgoingVoluntary').checked;
 
   var inPct = inTotal > 0 ? Math.min(inHis / inTotal * 100, 100) : 0;
   var outPct = outTotal > 0 ? Math.min(outHis / outTotal * 100, 100) : 0;
@@ -527,19 +531,20 @@ function calc() {
   if (outPct > 50 && outTotal > 0) {
     $('babbleLabelOut').textContent = outPct.toFixed(0) + '% — DU ringte HAN, og han kuppet samtalen';
   } else {
-    $('babbleLabelOut').textContent = outPct > 0 ? outPct.toFixed(0) + '% av samtalen var Mortens' : '';
+    $('babbleLabelOut').textContent = outPct > 0 ? outPct.toFixed(0) + '% kuppet av Morten' : '';
   }
 
-  var totalHisMin = inHis + outHis;
-  var babbleHrs = totalHisMin / 60;
-  var babbleVal = babbleHrs * rate;
+  // Incoming: all of Morten's talk time is cost (never voluntary)
+  // Outgoing: Morten's hijacked time is always cost; your own time only discountable if voluntary
+  var babbleVal = (inHis + outHis) * rate;
   $('babbleCost').textContent = fmt(babbleVal);
-  $('babbleSub').textContent = rate && totalHisMin ? totalHisMin + ' min monolog × ' + fmt(rate) + '/t' : '';
+  var totalBabbleHrs = inHis + outHis;
+  $('babbleSub').textContent = rate && totalBabbleHrs ? totalBabbleHrs + ' t monolog × ' + fmt(rate) + '/t' : '';
 
   // Hijack
   if (outTotal > 0 && outHis > outTotal * 0.5) {
-    var hijackMin = outHis - (outTotal * 0.5);
-    $('hijackComment').textContent = '⚠ Morten kuppet ' + hijackMin.toFixed(0) + ' min av DINE utgående samtaler';
+    var hijackHrs = outHis - (outTotal * 0.5);
+    $('hijackComment').textContent = '⚠ Morten kuppet ' + hijackHrs.toFixed(1) + ' t av DINE utgående samtaler';
     $('hijackComment').style.color = 'var(--red)';
   } else {
     $('hijackComment').textContent = '';
@@ -551,15 +556,23 @@ function calc() {
   $('adminCost').textContent = fmt(adminVal);
   $('adminSub').textContent = adminHrs > 0 ? adminHrs + ' t egenadministrasjon' : '';
 
-  // Discount
+  // Discount logic:
+  // - Morten's babble: NEVER discounted
+  // - Outgoing your time: only discounted if voluntary
+  // - Time entries + admin: always eligible for discount
   var discount = parseInt($('discountSlider').value) / 100;
-  var grossTotal = timeVal + babbleVal + adminVal;
-  var discountAmount = grossTotal * discount;
-  var grand = grossTotal - discountAmount;
+
+  var outYourTime = Math.max(0, outTotal - outHis);
+  var discountableOutgoing = outVoluntary ? outYourTime * rate : 0;
+  var discountableAmount = timeVal + adminVal + discountableOutgoing;
+  var nonDiscountable = babbleVal + (outVoluntary ? 0 : outYourTime * rate);
+
+  var discountAmount = discountableAmount * discount;
+  var grand = discountableAmount - discountAmount + nonDiscountable;
 
   $('grandTotal').textContent = fmt(grand);
   $('grandSub').textContent = grand > 0 ? gratisKommentar(grand) : '';
-  $('discountLine').textContent = discount > 0 ? 'Vennskapsrabatt: −' + fmt(discountAmount) + ' (' + (discount * 100).toFixed(0) + '%)' : '';
+  $('discountLine').textContent = discount > 0 ? 'Vennskapsrabatt: −' + fmt(discountAmount) + ' (' + (discount * 100).toFixed(0) + '%)' + (outVoluntary ? '' : ' · Utgående samtaler ikke rabattberettiget') : '';
 
   // Society
   var network = parseFloat($('networkSize').value) || 0;
@@ -591,6 +604,7 @@ function samfunnsKommentar(v) {
 ['hourlyRate','callInTotal','callInHis','callOutTotal','callOutHis','networkSize'].forEach(function(id) {
   $(id).addEventListener('input', calc);
 });
+$('outgoingVoluntary').addEventListener('change', calc);
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
