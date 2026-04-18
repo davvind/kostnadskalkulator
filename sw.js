@@ -1,4 +1,4 @@
-const CACHE = 'kostnad-v1';
+const CACHE = 'kostnad-v2';
 const FILES = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
